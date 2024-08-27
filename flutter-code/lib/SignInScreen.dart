@@ -7,7 +7,7 @@ class SignInScreen extends StatefulWidget {
   @override
   _SignInScreenState createState() => _SignInScreenState();
 }
-
+//Authentication
 class _SignInScreenState extends State<SignInScreen> {
   final _auth = FirebaseAuth.instance;
   String email = '';
@@ -49,6 +49,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(height: 160), // Adjust this to create space for the image
+                    //Email
                     TextField(
                       onChanged: (value) {
                         email = value;
@@ -67,6 +68,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     ),
                     SizedBox(height: 20),
+                    //password
                     TextField(
                       onChanged: (value) {
                         password = value;
@@ -86,6 +88,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     ),
                     SizedBox(height: 40),
+                    //sign in button
                     Positioned(  
                           child: Center(
                             child: Container(
@@ -104,6 +107,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                 borderRadius: BorderRadius.circular(40),
                               ),
                                   child: ElevatedButton(
+                                    //when the user click sign in it will show the shome page
                                     onPressed: () async {
                                       try {
                                         await _auth.signInWithEmailAndPassword(email: email, password: password);
@@ -124,64 +128,63 @@ class _SignInScreenState extends State<SignInScreen> {
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
-                  ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Don\'t have an account?',
-                          style: TextStyle(color: Color.fromARGB(255, 1, 19, 49),), 
-                        
-                          ),
-                          
-                        
-
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
+                                  ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('Don\'t have an account?',
+                                  style: TextStyle(color: Color.fromARGB(255, 1, 19, 49),), 
+                                
+                                  ),
+                                  //if he doesn't have an account it will take the user to the sign up screen
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
+                                  },
+                                  child: Text('Sign Up',
+                                  style: TextStyle(color: Color.fromARGB(255, 31, 51, 82),fontWeight: FontWeight.bold,fontSize: 15,),),
+                                ),
+                              ],
+                            ),
+                            //forgot password
+                      TextButton(
+                          onPressed: () async {
+                            if (email.isNotEmpty) { 
+                              try { //reset password message
+                                await _auth.sendPasswordResetEmail(email: email);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Password reset email sent!'),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error: ${e.toString()}'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            } else {  //if the user didn't write his emial
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Please enter your email first'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
                           },
-                          child: Text('Sign Up',
-                          style: TextStyle(color: Color.fromARGB(255, 31, 51, 82),fontWeight: FontWeight.bold,fontSize: 15,),),
+                          child: Text(
+                            'Forgot Password?',
+                            style: TextStyle(color: Color.fromARGB(255, 31, 51, 82),fontSize: 15,),
+                          ),
                         ),
-                      ],
-                    ),
-                    TextButton(
-  onPressed: () async {
-    if (email.isNotEmpty) {
-      try {
-        await _auth.sendPasswordResetEmail(email: email);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Password reset email sent!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please enter your email first'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  },
-  child: Text(
-    'Forgot Password?',
-    style: TextStyle(color: Color.fromARGB(255, 31, 51, 82),fontSize: 15,),
-  ),
-),
 
               
                   ],

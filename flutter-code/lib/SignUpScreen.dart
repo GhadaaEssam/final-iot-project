@@ -7,7 +7,7 @@ class SignUpScreen extends StatefulWidget {
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
-
+//Firestore
 class _SignUpScreenState extends State<SignUpScreen> {
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
@@ -19,6 +19,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(  // Wrap everything in SingleChildScrollView
+      //background screen
         child: Container(
           height: MediaQuery.of(context).size.height,  // Ensure the container takes full screen height
           decoration: BoxDecoration(
@@ -32,6 +33,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Stack(
               children: [
+                //image
                 Positioned(
                   top: 60,  // Vertical position
                   left: 0,
@@ -51,6 +53,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(height: 160),  // Adjust this to create space for the image
+                    //username
                     TextField(
                       onChanged: (value) {
                         username = value;
@@ -68,7 +71,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                     ),
+
                     SizedBox(height: 20),
+                    //email
                     TextField(
                       onChanged: (value) {
                         email = value;
@@ -87,6 +92,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     SizedBox(height: 20),
+                    //password
                     TextField(
                       onChanged: (value) {
                         password = value;
@@ -106,6 +112,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     SizedBox(height: 40),
+                    //sign Up button
                     Container(
                       width: 221,
                       height: 56,
@@ -122,6 +129,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         borderRadius: BorderRadius.circular(40),
                       ),
                       child: ElevatedButton(
+                        //send data to firestore
                         onPressed: () async {
                           try {
                             UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
@@ -174,6 +182,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                     ),
                     SizedBox(height: 20),
+                    //if the user whant to go to the sign Im screen
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

@@ -29,7 +29,7 @@ private:
     const int servoPin =14;
 
     const int buzzerPin=33;
-    const int LEDpin=0;
+    const int LEDpin=13;
 
     const int SSpin=5;
     const int RSTpin=16;
@@ -38,7 +38,6 @@ private:
 
     wifiManager wifi;
     mqttManager mqttClient;
-    servoMotor servo;
     buzzer buzzerdevice;
     LCD lcd;
     baseActuator led;
@@ -53,10 +52,9 @@ public:
     smartHome() 
         : wifi(wifissid, wifipassword), 
           mqttClient(mqttServer, mqttUsername, mqttPassword),
-          servo(servoPin),
-          buzzerdevice(buzzerPin),  
-          lcd(),  
-          led(LEDpin),  
+          buzzerdevice(buzzerPin),  // Example pin for buzzer
+          lcd(),  // Example parameters for LCD
+          led(LEDpin),  // Example pin for LED
           flameSensordevice(flamePin,&mqttClient),
           tempSensor(temperaturePin,&mqttClient),
           irSensor(irPin,&mqttClient),
@@ -71,23 +69,23 @@ public:
 
         mqttClient.setup();
         mqttClient.connect();
-        mqttClient.subscribe("led/brightness");
+
+        mqttClient.subscribe("light");
         mqttClient.subscribe("door/control");
 
     } 
 
     void setup(){
-        smartDevice* smartdevices[] = { &buzzerdevice, &lcd, &led, &flameSensordevice,
+        smartDevice* smartdevices[] = { &servo, &buzzerdevice, &lcd, &led, &flameSensordevice,
                                         &tempSensor,&irSensor,&soilMoistureSensor,&myRFID};
 
         for (smartDevice* device : smartdevices) {
             device->deviceSetup();
         }
-        servo.deviceSetup();
     }
 
     void publishSensors() {
-        // Publish readings of sensors 
+        // Publish readings
         flameSensordevice.publishReading("sensors/flame");
         tempSensor.publishReading("sensors/temperature");
         soilMoistureSensor.publishReading("sensors/soilMoisture"); 
@@ -99,14 +97,12 @@ public:
         }
     }
 
-    void readSensors(){     
-        // method Read sensors and print reading to the serial
+void readSensors(){        // Read sensors
         flameSensordevice.sense();
         tempSensor.readTemperature();
         soilMoistureSensor.sense();
         irSensor.sense();
 
-        // manage the flame sensor reading
         if(flameSensordevice.getReading()==LOW) {
             buzzerdevice.startAction();
         }else{
@@ -117,50 +113,59 @@ public:
         tempSensor.printtoSerial("temperature");
         soilMoistureSensor.printtoSerial("soil moisture");
         irSensor.printtoSerial("ir reading");
-    }
-
-
+}
 
     void doorLockSystem(){
-        // a method to manage the door lock using RFID
         Serial.println("door lock system");
         Serial.println("sensing..");
         irSensor.sense();  // Read the IR sensor
 
-        if (irSensor.getReading() < 1000) {  // checking if someone is close
-           // Display "scan card" on the LCD
+        if (irSensor.getReading() < 1000) {  // Assuming the IR sensor returns a positive value when someone is close
+           // Display "Welcome" on the LCD
             lcd.clear();
             lcd.printMessage(0, 0, " scan card"); // Additional message on the second line
-            myRFID.checkRFID();//starts the RFID module
+            myRFID.checkRFID();
         }
     }
 
+    void ledBrightnessControl() {
+        // Print the received topic and message for debugging
+        Serial.println("Received topic: " + mqttClient.getTopic());
+        Serial.println("Received message: " + mqttClient.getMessage());
 
-    void ledBrightnessControl(){
-        if(mqttClient.getTopic()=="light"){
-            
+        if (mqttClient.getTopic() == "light") {
             String ledread = mqttClient.getMessage();
-            // if switch is ON from flutter
-            if(ledread=="on"){
-                led.startAction(); 
-            }
-            // if switch is off from flutter
-            else if (ledread=="off")
-            {
+            if (ledread == "on") {
+                led.startAction();
+            } else if (ledread == "off") {
                 led.stopAction();
             }
+        }}
+
+
+    void doorControl(){
+        // Print the received topic and message for debugging
+        Serial.println("Received topic: " + mqttClient.getTopic());
+        Serial.println("Received message: " + mqttClient.getMessage());
+
+        if(mqttClient.getTopic()=="door/control"){
+            String action = mqttClient.getMessage();
+            if(action =="OPEN"){
+                myRFID.myServo.setAngle(180);
+            }else if (action == "CLOSE"){
+                myRFID.myServo.setAngle(0);
+            }
         }
-    }
+}
 
-
-  void loop(){
+    void loop(){
         if (!mqttClient.isConnected()) {
-        mqttClient.connect();  // Reconnect if the connection is lost
+            mqttClient.connect();  // Reconnect if the connection is lost
         }
         mqttClient.loop(); // Process incoming messages
         unsigned long now = millis(); 
 
-        if (now - lastMsg >= 5000) { //read and publish irsensor, temperature and soilmoisture
+        if (now - lastMsg > 10000) { //publish irsensor, temperature and soilmoisture
             readSensors();
             publishSensors();
             lastMsg = now;
@@ -168,9 +173,9 @@ public:
          // Delay to avoid flooding the MQTT broker
         doorLockSystem();
         ledBrightnessControl();
-        delay(1000);   
-      } 
-
+        doorControl();
+        delay(1000);
+    } 
 
 };
 

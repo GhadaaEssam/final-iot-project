@@ -13,9 +13,10 @@ private:
     buzzer myBuzzer;       // Buzzer instance
     bool flag;             // stores the result of card recognition
     LCD rfidLCD;           // LCD to talk with the user
-    servoMotor myServo;    // Servo motor instance
 
 public:
+    servoMotor myServo;    // Servo motor PUBLIC instance
+
     RFID(int SS_PIN, int RST_PIN, int buzzerPin, int servoPin) 
         : rfid(SS_PIN, RST_PIN), myBuzzer(buzzerPin), rfidLCD(), myServo(servoPin), flag(false) {}
 

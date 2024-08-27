@@ -9,9 +9,6 @@
 
 class mqttManager:public Connection {
 public:
-    WiFiClientSecure espClient;  
-    PubSubClient client;
-
     mqttManager(const char* server, const char* username, const char* password)
         : mqtt_server(server), mqtt_username(username), mqtt_password(password), client(espClient) {
         // Constructor initializes mqtt configurations and client with espClient
@@ -97,6 +94,9 @@ public:
     }
     
 private:
+    WiFiClientSecure espClient;  
+    PubSubClient client;
+
     const char* mqtt_server;
     const char* mqtt_username;
     const char* mqtt_password;

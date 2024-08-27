@@ -14,12 +14,12 @@
 
 class smartHome{
 private:
-    const char* wifissid = "salma";
-    const char* wifipassword = "01208077422sa";
+    const char* wifissid = "";
+    const char* wifipassword = "";
 
-    const char* mqttServer = "74498b65023b4618b32ff9eca30eb516.s1.eu.hivemq.cloud";
-    const char* mqttUsername =  "katy1d";
-    const char* mqttPassword = "Mennalove1d!!";
+    const char* mqttServer = "";
+    const char* mqttUsername =  "";
+    const char* mqttPassword = "";
 
     const int flamePin = 27;
     const int temperaturePin = 35;
@@ -157,7 +157,7 @@ public:
         if (!mqttClient.isConnected()) {
         mqttClient.connect();  // Reconnect if the connection is lost
         }
-        mqttClient.client.loop(); // Process incoming messages
+        mqttClient.loop(); // Process incoming messages
         unsigned long now = millis(); 
 
         if (now - lastMsg >= 5000) { //read and publish irsensor, temperature and soilmoisture

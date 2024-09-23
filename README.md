@@ -40,7 +40,7 @@ This project implements a smart home system using IoT technologies. The system c
     flutter pub get
     flutter run
 
-##Usage
+## Usage
 - The ESP32 handles sensor readings and communicates with the Flutter app via MQTT.
 - The app displays real-time sensor data and allows users to control the door lock and monitor home conditions remotely.
 
